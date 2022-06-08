@@ -1,13 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
 class Evolution:
-    def __init__(self, goal_function, function_dimension, population_size, max_iter, with_crossing, p_mutation, mutation_strength,
+    def __init__(self, goal_function, function_dimension, upper_bound, population_size, max_iter, with_crossing, p_mutation,
+                 mutation_strength,
                  p_crossover):
         self.tournament_size = 2
         self.goal_function = goal_function
         self.population_dim = function_dimension
-        self.dim_upper_bound = 100
+        self.upper_bound = upper_bound
         self.population_size = population_size
         self.current_gen_count = 0
         self.max_gen_count = max_iter
@@ -46,8 +49,9 @@ class Evolution:
 
     def initialize_population(self):
         rng = np.random.default_rng()
-        self.current_population = np.array([rng.uniform(-self.dim_upper_bound, self.dim_upper_bound, size=self.population_dim) \
-                                   for _ in range(self.population_size)])
+        self.current_population = np.array(
+            [rng.uniform(-self.upper_bound, self.upper_bound, size=self.population_dim) \
+             for _ in range(self.population_size)])
         self.current_evaluation = self.evaluate(self.current_population)
         self.current_best = self.best_overall = self.find_best(self.current_population, self.current_evaluation)
 
@@ -68,8 +72,8 @@ class Evolution:
         return mutants
 
     def succession(self, mutants, evaluation):
-        population = np.concatenate((mutants, self.current_best[0].reshape((self.population_dim, 1))))
-        evaluation = np.concatenate((evaluation, self.current_best[1].reshape((1, 1))))
+        population = np.concatenate((mutants, self.current_best[0].reshape((1, self.population_dim))), axis=0)
+        evaluation = np.concatenate((evaluation, self.current_best[1]))
         pop_eval = list(zip(population, evaluation))
         sorted_pop = sorted(pop_eval, key=lambda x: x[1])
         sorted_pop = sorted_pop[:-1]
@@ -101,7 +105,7 @@ class Evolution:
                     child_a = weights_a[j] * parent_a + (1 - weights_a[j]) * parent_b
                     child_b = weights_a[j] * parent_a + (1 - weights_b[j]) * parent_b
                 children[i] = child_a
-                children[i+1] = child_b
+                children[i + 1] = child_b
             else:
                 children[i] = parent_a
                 children[i + 1] = parent_b
@@ -121,7 +125,8 @@ class Evolution:
         x = np.arange(self.max_gen_count)
         plt.figure(figsize=(20, 10))
         plt.plot(x, y)
-        plt.title("Wartość najlepszego punktu w danej generacji")
+        plt.yscale('log')
+        plt.title(f"Wartość najlepszego punktu w danej generacji. Wartość w optimum = {self.best_overall[1]}")
         plt.xlabel("Generacja")
         plt.ylabel("q(x_best)")
         plt.grid(b=True)
@@ -131,7 +136,7 @@ class Evolution:
         x = np.array(self.population_history).flatten()
         y = np.array(self.evaluation_history).flatten()
         x1 = np.linspace(-5, 5, 100)
-        y1 = [x_**2 for x_ in x1]
+        y1 = [self.goal_function(x_) for x_ in x1]
         plt.figure(figsize=(20, 10))
         plt.plot(x, y)
         plt.plot(x1, y1)
@@ -146,8 +151,31 @@ class Evolution:
         x = np.arange(self.max_gen_count)
         plt.figure(figsize=(20, 10))
         plt.plot(x, y)
-        plt.title("Wartość średnia populacji w danej generacji")
+        plt.yscale('log')
+        plt.title(f"Wartość średnia populacji w danej generacji. Dla ostatniej populacji: {y[-1]}")
         plt.xlabel("Generacja")
         plt.ylabel("E(q(x))")
         plt.grid(b=True)
+        plt.show()
+
+    def plot_steps_with_contour_plot(self):
+        plt.figure(figsize=(40, 20))
+        x = np.arange(-self.upper_bound, self.upper_bound, 0.5)
+        y = np.arange(-self.upper_bound, self.upper_bound, 0.5)
+        X, Y = np.meshgrid(x, y)
+        Z = np.empty(X.shape)
+        for k in range(X.shape[0]):
+            for l in range(X.shape[1]):
+                Z[k, l] = self.goal_function(np.array([X[k, l], Y[k, l]]))
+
+        plt.contour(X, Y, Z, 20)
+        minimum = self.best_overall
+        steps = np.array(self.population_history)
+        steps = steps.reshape(-1, steps.shape[-1])
+        plt.title(f"Minimum = {minimum[1]}")
+        plt.plot(minimum[0][0], minimum[0][1], '*')
+        plt.scatter(steps[:, 0], steps[:, 1])
+        # for m in range(len(steps[:-1])):
+        #     plt.arrow(steps[m][0], steps[m][1], steps[m + 1][0] - steps[m][0], steps[m + 1][1] - steps[m][1],
+        #               fc='k', ec='k')
         plt.show()
