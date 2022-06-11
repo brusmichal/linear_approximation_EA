@@ -187,7 +187,14 @@ class Approximator():
             x_min = x
         return min, x_min
 
-
+    def find_minimum_in_init_data(self):
+        min = 10e10
+        for m in range(len(k_list)):
+            for n in range(k_list[m].shape[0]):
+                val = k_list[m][n][k_list[m].shape[1]-1]
+                if val < min:
+                    min = val
+        return min
 
 
 
@@ -199,13 +206,14 @@ def x_square(x):
 
 
 domain_dim = 2
-approx = Approximator(UPPER_BOUND=100, DIMENTIONALITY=domain_dim, limit_err=0.01)
-K = approx.random_np_array(size=10000, function=x_square)
+approx = Approximator(UPPER_BOUND=100, DIMENTIONALITY=domain_dim, limit_err=0.0001)
+K = approx.random_np_array(size=100000, function=x_square)
 approx.K_list.append(K)
 a = approx.calculate_a_vector(K)
 approx.a_list.append(a)
 a_list, k_list = approx.check_domain()
 print(approx.find_minimum(function=x_square))
+print(f'Minimum w danych: {approx.find_minimum_in_init_data()}')
 
 
 def matlab_test():
