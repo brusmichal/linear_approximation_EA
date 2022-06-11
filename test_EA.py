@@ -14,8 +14,9 @@ def f2(x):
 
 
 def main():
-    ea1 = Evolution(func.f3, 10, 100, 20, 10000, True, 0.1, 0.1, 0.8)
+    ea1 = Evolution(func.f3, 10, 100, 20, 100, True, 0.1, 0.1, 0.8)
     ea1.learn()
+    points = ea1.get_points_for_approximator(2, True)
     ea1.plot_means()
     ea1.plot_best_history()
     # ea1.plot_steps()

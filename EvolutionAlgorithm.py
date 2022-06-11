@@ -26,6 +26,16 @@ class Evolution:
         self.population_history = []
         self.best_history = []
 
+    def get_points_for_approximator(self, k_th_generation, up_to):
+        points = []
+        for i, (population, evaluation) in enumerate(zip(self.population_history, self.evaluation_history)):
+            eval_pop = np.array([[1, x, y] for x, y in list(zip(population, evaluation))])
+            points.append(eval_pop)
+        if up_to:
+            return points[:k_th_generation]
+        else:
+            return points[k_th_generation]
+
     def learn(self):
         self.initialize_population()
         while self.current_gen_count < self.max_gen_count:
