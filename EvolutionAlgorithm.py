@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class Evolution:
     def __init__(self, goal_function, function_dimension, upper_bound, population_size, max_iter, with_crossing,
-                 p_mutation,
                  mutation_strength,
                  p_crossover):
         self.tournament_size = 2
@@ -15,7 +15,6 @@ class Evolution:
         self.current_gen_count = 0
         self.max_gen_count = max_iter
         self.with_crossing = with_crossing
-        self.p_mutation = p_mutation
         self.mutation_strength = mutation_strength
         self.p_crossover = p_crossover
         self.current_population = np.empty([self.population_size, self.population_dim])
@@ -125,10 +124,8 @@ class Evolution:
     def mutation_gaussian(self, children):
         rng = np.random.default_rng()
         for i in range(len(children)):
-            prob = rng.uniform(0, 1)
-            if prob < self.p_mutation:
-                mutation_matrix = rng.normal(0, 1, size=len(children[i]))
-                children[i] = children[i] + self.mutation_strength * mutation_matrix
+            mutation_matrix = rng.normal(0, 1, size=len(children[i]))
+            children[i] = children[i] + self.mutation_strength * mutation_matrix
         return children
 
     def plot_best_points_values_history(self):
@@ -158,7 +155,24 @@ class Evolution:
         plt.grid(b=True)
         plt.show()
 
-    def plot_genarations_means(self):
+    def plot_nice_3d(self):
+        fig = plt.figure(figsize=(15, 15))
+        ax = Axes3D(fig)
+        X = np.linspace(-5, 5, 50)
+        Y = np.linspace(-5, 5, 50)
+        X, Y = np.meshgrid(X, Y)
+        Z = self.goal_function([X, Y])
+        surf = ax.plot_surface(X, Y, Z, cmap='plasma')
+        # steps = np.array(self.population_history)
+        # steps = steps.reshape(-1, steps.shape[-1])
+        # ev = np.array(self.evaluation_history)
+        # ev = ev.reshape(-1, steps.shape[-1])
+        # ax.scatter(steps[:, 0], steps[:, 1], ev)
+        ax.view_init(20, 30)
+        fig.colorbar(surf, shrink=0.5, aspect=5)
+        plt.show()
+
+    def plot_generations_means(self):
         y = np.array([evaluation.mean() for evaluation in self.evaluation_history])
         x = np.arange(self.max_gen_count)
         plt.figure(figsize=(20, 10))

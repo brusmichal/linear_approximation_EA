@@ -18,13 +18,12 @@ def main():
 
 
 def test_ea():
-    ea1 = Evolution(f2, 2, 10, 20, 100, True, 0.1, 0.1, 0.8)
+    ea1 = Evolution(func.f9, 10, 100, 100, 10000, False, 1, 0.8)
     ea1.learn()
     points = ea1.get_points_for_approximator(2, True)
     ea1.plot_population_move(only_best_points=False)
     ea1.plot_best_points_values_history()
-    ea1.plot_genarations_means()
-    # ea1.plot_steps_2d()
+    ea1.plot_generations_means()
 
 
 if __name__ == '__main__':
