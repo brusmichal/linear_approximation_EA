@@ -14,13 +14,17 @@ def f2(x):
 
 
 def main():
-    ea1 = Evolution(func.f3, 10, 100, 20, 100, True, 0.1, 0.1, 0.8)
+    test_ea()
+
+
+def test_ea():
+    ea1 = Evolution(f2, 2, 10, 20, 100, True, 0.1, 0.1, 0.8)
     ea1.learn()
     points = ea1.get_points_for_approximator(2, True)
-    ea1.plot_means()
-    ea1.plot_best_history()
-    # ea1.plot_steps()
-    ea1.plot_steps_with_contour_plot()
+    ea1.plot_population_move(only_best_points=False)
+    ea1.plot_best_points_values_history()
+    ea1.plot_genarations_means()
+    # ea1.plot_steps_2d()
 
 
 if __name__ == '__main__':

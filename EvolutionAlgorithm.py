@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
 class Evolution:
-    def __init__(self, goal_function, function_dimension, upper_bound, population_size, max_iter, with_crossing, p_mutation,
+    def __init__(self, goal_function, function_dimension, upper_bound, population_size, max_iter, with_crossing,
+                 p_mutation,
                  mutation_strength,
                  p_crossover):
         self.tournament_size = 2
@@ -29,7 +29,7 @@ class Evolution:
     def get_points_for_approximator(self, k_th_generation, up_to):
         points = []
         for i, (population, evaluation) in enumerate(zip(self.population_history, self.evaluation_history)):
-            eval_pop = np.array([[1, x, y] for x, y in list(zip(population, evaluation))])
+            eval_pop = [[1, x, y] for x, y in list(zip(population, evaluation))]
             points.append(eval_pop)
         if up_to:
             return points[:k_th_generation]
@@ -77,8 +77,8 @@ class Evolution:
         return self.tournament_selection()
 
     def genetic_operations(self, reproduced):
-        children = self.crossover(reproduced)
-        mutants = self.mutation(children)
+        children = self.uniform_crossover(reproduced)
+        mutants = self.mutation_gaussian(children)
         return mutants
 
     def succession(self, mutants, evaluation):
@@ -101,7 +101,7 @@ class Evolution:
             selected[i] = winner
         return selected
 
-    def crossover(self, reproduced):
+    def uniform_crossover(self, reproduced):
         children = np.empty([self.population_size, self.population_dim])
         rng = np.random.default_rng()
         for i in range(0, self.population_size - 1, 2):
@@ -111,6 +111,7 @@ class Evolution:
             if rng.uniform(0, 1) < self.p_crossover:
                 child_a = np.empty([self.population_dim])
                 child_b = np.empty([self.population_dim])
+                # whole arithmetic recombination
                 for j in range(len(weights_a)):
                     child_a = weights_a[j] * parent_a + (1 - weights_a[j]) * parent_b
                     child_b = weights_a[j] * parent_a + (1 - weights_b[j]) * parent_b
@@ -121,7 +122,7 @@ class Evolution:
                 children[i + 1] = parent_b
         return children
 
-    def mutation(self, children):
+    def mutation_gaussian(self, children):
         rng = np.random.default_rng()
         for i in range(len(children)):
             prob = rng.uniform(0, 1)
@@ -130,19 +131,20 @@ class Evolution:
                 children[i] = children[i] + self.mutation_strength * mutation_matrix
         return children
 
-    def plot_best_history(self):
+    def plot_best_points_values_history(self):
         y = np.array([x[1] for x in self.best_history])
         x = np.arange(self.max_gen_count)
         plt.figure(figsize=(20, 10))
         plt.plot(x, y)
         plt.yscale('log')
-        plt.title(f"Wartość najlepszego punktu w danej generacji. Wartość w optimum = {self.best_overall[1]}")
+        plt.title(
+            f"Wartość funkcji dla najlepszego punktu w danej generacji. Wartość w optimum = {self.best_overall[1]}")
         plt.xlabel("Generacja")
         plt.ylabel("q(x_best)")
         plt.grid(b=True)
         plt.show()
 
-    def plot_steps(self):
+    def plot_steps_2d(self):
         x = np.array(self.population_history).flatten()
         y = np.array(self.evaluation_history).flatten()
         x1 = np.linspace(-5, 5, 100)
@@ -156,19 +158,19 @@ class Evolution:
         plt.grid(b=True)
         plt.show()
 
-    def plot_means(self):
+    def plot_genarations_means(self):
         y = np.array([evaluation.mean() for evaluation in self.evaluation_history])
         x = np.arange(self.max_gen_count)
         plt.figure(figsize=(20, 10))
         plt.plot(x, y)
         plt.yscale('log')
-        plt.title(f"Wartość średnia populacji w danej generacji. Dla ostatniej populacji: {y[-1]}")
+        plt.title(f"Wartość średnia funkcji dla populacji w danej generacji. Dla ostatniej populacji: {y[-1]}")
         plt.xlabel("Generacja")
         plt.ylabel("E(q(x))")
         plt.grid(b=True)
         plt.show()
 
-    def plot_steps_with_contour_plot(self):
+    def plot_population_move(self, only_best_points: bool):
         plt.figure(figsize=(40, 20))
         x = np.arange(-self.upper_bound, self.upper_bound, 0.5)
         y = np.arange(-self.upper_bound, self.upper_bound, 0.5)
@@ -180,12 +182,15 @@ class Evolution:
 
         plt.contour(X, Y, Z, 20)
         minimum = self.best_overall
-        steps = np.array(self.population_history)
-        steps = steps.reshape(-1, steps.shape[-1])
+        if only_best_points:
+            steps = np.array([x[0] for x in self.best_history])
+            for m in range(len(steps[:-1])):
+                plt.arrow(steps[m][0], steps[m][1], steps[m + 1][0] - steps[m][0], steps[m + 1][1] - steps[m][1])
+        else:
+            steps = np.array(self.population_history)
+            steps = steps.reshape(-1, steps.shape[-1])
+            plt.scatter(steps[:, 0], steps[:, 1])
+
         plt.title(f"Minimum = {minimum[1]}")
         plt.plot(minimum[0][0], minimum[0][1], '*')
-        plt.scatter(steps[:, 0], steps[:, 1])
-        # for m in range(len(steps[:-1])):
-        #     plt.arrow(steps[m][0], steps[m][1], steps[m + 1][0] - steps[m][0], steps[m + 1][1] - steps[m][1],
-        #               fc='k', ec='k')
         plt.show()
