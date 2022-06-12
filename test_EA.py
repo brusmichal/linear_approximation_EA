@@ -20,7 +20,7 @@ def main():
 
 
 def make_statistics(runs_number):
-    populations = np.array([20, 50, 75, 100, 125])
+    populations = np.array([20, 50, 80, 100, 120])
     mutations = np.array([0.05, 0.1, 0.5, 1, 2])
     means = np.empty((len(cec.all_functions), len(populations), len(mutations)))
     stds = np.empty((len(cec.all_functions), len(populations), len(mutations)))
@@ -34,7 +34,7 @@ def make_statistics(runs_number):
                 # print(f"Mutation strength: {mutation}")
                 minimums = np.empty([runs_number])
                 for i in range(runs_number):
-                    ea = Evolution(function, 10, 100, population, 20000 / population, False, mutation, 0.8)
+                    ea = Evolution(function, 10, 100, population, 10000, False, mutation, 0.8)
                     ea.learn()
                     minimum = ea.get_optimum()[1]
                     minimums[i] = minimum
