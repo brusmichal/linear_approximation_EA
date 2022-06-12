@@ -5,6 +5,7 @@ from numpy.linalg import inv
 from numpy import transpose, matmul, subtract, true_divide
 from cec2017.functions import *
 import sys
+from random import randrange
 
 
 class Approximator():
@@ -19,7 +20,7 @@ class Approximator():
         self.a_list = []
         self.K_list = []  # macierz połączona [[1, x, f(x)],...]
         self.lim_err = limit_err  # maksymalny dopuszczalny błąd Y-Y_mod
-        self.axis = 1  # oś względem której nastęuje podział dziedziny
+        self.axis = randrange(self.DIM)#1  # oś względem której nastęuje podział dziedziny
 
     def rnd_x(self):
         #wylosuj punkt x:
@@ -36,8 +37,13 @@ class Approximator():
     def calculate_a_vector(self, K):
         Y = K[:, -1:]
         M = K[:, :-1]
+        #try:
         MtM_inv = inv(M.T @ M)
         a = MtM_inv @ M.T @ Y
+        #except:
+        #    pass
+            #print(M.T@M)
+        #else:
         return a
 
     #wartość modelu dla podanego w K wektowa argumentów
@@ -108,7 +114,7 @@ class Approximator():
                 K_not_included.append(m_max)
                 print(f"Excluding {m_max} part")
                 m_max, err_max = self.check_all_parts(K_not_included)
-                if m_max == -1:
+                if m_max == NULL:
                     break
                 i = 0
             else:
@@ -124,7 +130,7 @@ class Approximator():
                     self.manage_bounds_set(m_max, split_value)
                     #print("Split of domain done")
                     m_max, err_max = self.check_all_parts(K_not_included)
-                    if m_max == -1:
+                    if m_max ==NULL:
                         break
                 self.change_axis()
         return self.a_list, self.K_list
@@ -145,8 +151,8 @@ class Approximator():
         self.low_limits_list[len(self.up_limits_list)-1][self.axis-1] = value
 
     def check_all_parts(self, K_not_included):
-        m_max = -1
-        err_max = 10000
+        m_max = NULL
+        err_max = 0
         #print(f"Checking everything. Not including {len(K_not_included)} parts.")
         for m in range(len(self.K_list)):
             if m in K_not_included:
