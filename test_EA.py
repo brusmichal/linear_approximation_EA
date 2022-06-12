@@ -47,6 +47,7 @@ def make_statistics(runs_number):
         best_params = np.unravel_index(means[l].argmin(), means[l].shape)
         print(f"Best parameters position: {best_params[0], best_params[1]}")
         print(f"Best parameters values (pop_size, mut_str): {populations[best_params[0]], mutations[best_params[1]]}")
+        print(f"Mean minimum with these params: {means[l][best_params[0]][best_params[1]]}")
         print("--------------------------------------------------------------------------------------------------")
 
 
