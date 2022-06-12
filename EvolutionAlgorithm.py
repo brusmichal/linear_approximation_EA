@@ -25,6 +25,13 @@ class Evolution:
         self.population_history = []
         self.best_history = []
 
+    def get_optimum(self):
+        return self.best_overall
+
+    def get_last_population_with_evaluation(self):
+        eval_pop = [np.append(x, y) for x, y in list(zip(self.current_population, self.current_evaluation))]
+        return eval_pop
+
     def get_points_for_approximator(self, k_th_generation, up_to):
         size = len(self.population_history)* self.population_size
         points = np.zeros([size,self.population_dim+2], dtype=float)
