@@ -101,7 +101,7 @@ class Approximator():
         m_max, err_max = self.check_all_parts(K_not_included)
         while err_max > self.lim_err:
             if len(K_not_included) == len(self.K_list):
-                print('Impossible to approximate')
+                #print('Impossible to approximate')
                 return self.a_list, self.K_list
             elif i == self.DIM:
                 print("To few points to split domain part.")
@@ -159,7 +159,7 @@ class Approximator():
         return m_max, err_max
 
     def find_minimum(self, function):
-        min = 10e10
+        min = 10e20
         x_min = NULL
         for m in range(len(self.K_list)):
             low_bound = list(self.low_limits_list[m])
@@ -167,15 +167,24 @@ class Approximator():
             a = list(self.a_list[m])
             #number of coordinates of an x which reach to the edge of the domain
             dim_at_max = 0
-            for dim in range(self.DIM):
-                if upp_bound[dim] == self.UPP_BOUND:
+            if self.DIM<=10:
+                condit_list = self.create_set(self.DIM)
+                for point_condit in condit_list:
                     x = list(low_bound)
-                    x[dim] = upp_bound[dim]
-                    min, x_min = self.minimum_test(a, min,x_min, x, function)
-                    dim_at_max +=1
-            min, x_min = self.minimum_test(a, min,x_min, list(low_bound), function)
-            if dim_at_max == self.DIM:
-                min, x_min = self.minimum_test(a, min,x_min, list(upp_bound), function)
+                    for dim in range(self.DIM):
+                        if point_condit[dim] == '1':
+                            x[dim] = upp_bound[dim]
+                    min, x_min = self.minimum_test(a, min,x_min, list(low_bound), function)
+            else:
+                for dim in range(self.DIM):
+                    if upp_bound[dim] == self.UPP_BOUND:
+                        x = list(low_bound)
+                        x[dim] = upp_bound[dim]
+                        min, x_min = self.minimum_test(a, min,x_min, x, function)
+                        dim_at_max +=1
+                min, x_min = self.minimum_test(a, min,x_min, list(low_bound), function)
+                if dim_at_max == self.DIM:
+                    min, x_min = self.minimum_test(a, min,x_min, list(upp_bound), function)
         return min, x_min
 
     def minimum_test(self, a, min, x_min, x, function):
@@ -188,13 +197,24 @@ class Approximator():
         return min, x_min
 
     def find_minimum_in_init_data(self):
-        min = 10e10
-        for m in range(len(k_list)):
-            for n in range(k_list[m].shape[0]):
-                val = k_list[m][n][k_list[m].shape[1]-1]
+        min = 10e20
+        x = NULL
+        for m in range(len(self.K_list)):
+            for n in range(self.K_list[m].shape[0]):
+                val = self.K_list[m][n][-1]
+                #print(self.K_list[m][n])
+                #print(self.K_list[m][n][-1])
+                x = self.K_list[m][n][1 : self.K_list[m].shape[1]-1]
                 if val < min:
                     min = val
-        return min
+        return min,x
+
+    def create_set(self,dim):
+        containing_condits = []
+        a = str(0)+str(dim)+'b'
+        for n in range(2**dim):
+            containing_condits.append(format(n, a))
+        return containing_condits
 
 
 
@@ -203,53 +223,3 @@ def x_square(x):
     for n in range(x.shape[0]):
         sum += x[n]**2
     return sum
-
-
-domain_dim = 2
-approx = Approximator(UPPER_BOUND=100, DIMENTIONALITY=domain_dim, limit_err=0.0001)
-K = approx.random_np_array(size=100000, function=x_square)
-approx.K_list.append(K)
-a = approx.calculate_a_vector(K)
-approx.a_list.append(a)
-a_list, k_list = approx.check_domain()
-print(approx.find_minimum(function=x_square))
-print(f'Minimum w danych: {approx.find_minimum_in_init_data()}')
-
-
-def matlab_test():
-    lines = []
-    for m in range(len(k_list)):
-        lines.append('x_'+str(m)+'= [')
-        if domain_dim == 2:
-            for n in range(k_list[m].shape[0]):
-                lines.append(str(k_list[m][n][1:k_list[m].shape[1]-1][0]) +
-                            " "+str(k_list[m][n][1:k_list[m].shape[1]-1][1]))
-        elif domain_dim ==1:
-            for n in range(k_list[m].shape[0]):
-                lines.append(str(k_list[m][n][1:k_list[m].shape[1]-1][0]))
-        lines.append('];')
-        lines.append('y_'+str(m)+'= [')
-        for n in range(k_list[m].shape[0]):
-            lines.append(str(k_list[m][n][k_list[m].shape[1]-1]))
-        lines.append('];')
-        lines.append('b_'+str(m)+'='+str(a_list[m][0][0])+';')
-        lines.append('a_'+str(m)+'='+str(a_list[m][1][0])+';')
-    if domain_dim == 1:
-        lines.append('hold on')
-        for m in range(len(k_list)):
-            lines.append('plot(x_'+str(m)+',x_'+str(m)+'.^2,"." )')
-            lines.append('plot(x_' + str(m)+',x_' + str(m) +
-                         ' .*a_'+str(m) + '+b_'+str(m) + ')')
-        lines.append('hold off')
-    elif domain_dim == 2:
-        lines.append('plot3(...')
-        for m in range(len(k_list)-1):
-            lines.append('x_'+str(m)+'(:,1),x_'+str(m) +
-                         '(:,2),y_'+str(m)+',...')  # \'.\',
-        m = len(k_list)-1
-        lines.append('x_'+str(m)+'(:,1),x_'+str(m)+'(:,2),y_'+str(m)+')')
-
-    with open('matlab_test.m', 'w') as f:
-        f.write('\n'.join(lines))
-
-matlab_test()

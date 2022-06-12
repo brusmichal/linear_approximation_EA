@@ -26,11 +26,14 @@ class Evolution:
         self.best_history = []
 
     def get_points_for_approximator(self, k_th_generation, up_to):
-        points = []
+        size = len(self.population_history)* self.population_size
+        points = np.zeros([size,self.population_dim+2], dtype=float)
+        j = 0
         for i, (population, evaluation) in enumerate(zip(self.population_history, self.evaluation_history)):
             eval_pop = [np.append(np.append([1], x), y) for x, y in list(zip(population, evaluation))]
             for point in eval_pop:
-                points.append(point)
+                points[j] = point
+                j+=1
         if up_to:
             return points[:k_th_generation*self.population_size]
         else:
