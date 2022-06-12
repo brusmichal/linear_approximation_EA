@@ -45,42 +45,67 @@ def matlab_test(k_list, a_list, domain_dim):
     with open('matlab_test.m', 'w') as f:
         f.write('\n'.join(lines))
 
-def iterate_through_generations(generations_num):
-    fun_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10]
-    fun_list = [f5, f6, f7, f8]
-    #fun_list = [f10]#, f6, f7, f8, f9, f10]
+def iterate_through_generations(generations_num, fun_list, domain_dim, upp_bound, population_size):
     for n in range(len(fun_list)):
-        print(f'Function number: {n+5}')
-        results = []
-        fun = fun_list[n]
-        domain_dim = 10
-        upp_bound =10
-        population_size = 50
-        ea1 = Evolution(goal_function=fun, function_dimension=domain_dim,upper_bound= upp_bound, 
-            population_size=population_size, max_iter=generations_num, 
-            with_crossing=False, mutation_strength=0.1, p_crossover=0.8)
-        ea1.learn()
-        points = ea1.get_points_for_approximator(generations_num, True)
-        for gen_num in range(generations_num):
-            #print((gen_num+1)*population_size)
-            pts = points[0:(gen_num+1)*population_size]  
-            #print(pts.size) 
-            approx = Approximator(UPPER_BOUND=upp_bound, DIMENTIONALITY=domain_dim, limit_err=1)
-            approx.K_list.append(pts)
-            a = approx.calculate_a_vector(pts)
-            approx.a_list.append(a)
-            a_list, k_list = approx.check_domain()
-            results.append([approx.find_minimum(function=fun)[0], approx.find_minimum_in_init_data()[0]])
-        model_is_better = 0
-        for element in results:
-            print(element)
-            if element[0]<element[1]:
-                model_is_better+=1
-        print(f'Model was better in {model_is_better/len(results)*100}% attempts')
+        try:
+            print(f'Function number: {n+3}')
+            results = []
+            fun = fun_list[n]
+            ea1 = Evolution(goal_function=fun, function_dimension=domain_dim,upper_bound= upp_bound, 
+                population_size=population_size, max_iter=generations_num, 
+                with_crossing=False, mutation_strength=0.5, p_crossover=0.8)
+            ea1.learn()
+            points = ea1.get_points_for_approximator(generations_num, True)
+            model_best_min = 10e20
+            ae_best_min = 10e20
+            for gen_num in range(generations_num):
+                try:
+                    #print((gen_num))#*population_size)
+                    pts = points[0:(gen_num+1)*population_size]  
+                    #print(pts.size) 
+                    approx = Approximator(UPPER_BOUND=upp_bound, DIMENTIONALITY=domain_dim, limit_err=0.00000001)
+                    approx.K_list.append(pts)
+                    a = approx.calculate_a_vector(pts)
+                    approx.a_list.append(a)
+                    a_list, k_list = approx.check_domain()
+                    results.append([approx.find_minimum(function=fun)[0], approx.find_minimum_in_init_data()[0]])
+                    print([approx.find_minimum(function=fun)[0], approx.find_minimum_in_init_data()[0]])
+                except ValueError:
+                    print('Value error!!!')
+                    pass
+                except np.linalg.LinAlgError:
+                    print("Singular matrix!!!")
+                    pass
+        except KeyboardInterrupt:
+            m_bett, m_best_min, ae_best_min = show_results(results,model_best_min,ae_best_min)
+            print(f'Model was better in {m_bett} of {len(results)} attempts')
+            print(f'Model best min was {m_best_min}, and EA best min was: {ae_best_min}')
+            break
+        m_bett, m_best_min, ae_best_min = show_results(results,model_best_min,ae_best_min)
+        print(f'Model was better in {m_bett} of {len(results)} attempts')
+        print(f'Model best min was {m_best_min}, and EA best min was: {ae_best_min}')
+
+
+def show_results(results,model_best_min,ae_best_min):
+    model_is_better = 0
+    for element in results:
+    #print(element)
+        if element[0]<element[1]:
+            model_is_better+=1
+        if element[0] < model_best_min:
+            model_best_min = element[0]
+        if element[1] < model_best_min:
+            ae_best_min = element[1]
+    return model_is_better, model_best_min, ae_best_min
 
 def main():
-    iterate_through_generations(generations_num=40)
-
+    #fun_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10]
+    fun_list = [f27]
+    domain_dim = 10
+    upp_bound =100
+    population_size = 10
+    generations_num = 10
+    iterate_through_generations(generations_num, fun_list, domain_dim, upp_bound, population_size)
 if __name__ == '__main__':
     main()
 
