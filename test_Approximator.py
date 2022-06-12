@@ -68,5 +68,10 @@ def iterate_through_generations(generations_num):
         for element in results:
             print(element)
 
+def main():
+    iterate_through_generations(10)
+
+if __name__ == '__main__':
+    main()
 
 #matlab_test(k_list, a_list, domain_dim)
