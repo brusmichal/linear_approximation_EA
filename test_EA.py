@@ -18,7 +18,7 @@ def main():
 
 
 def test_ea():
-    ea1 = Evolution(func.f9, 10, 100, 100, 10000, False, 1, 0.8)
+    ea1 = Evolution(func.f9, 10, 100, 100, 100, False, 1, 0.8)
     ea1.learn()
     points = ea1.get_points_for_approximator(2, True)
     ea1.plot_population_move(only_best_points=False)
