@@ -46,30 +46,40 @@ def matlab_test(k_list, a_list, domain_dim):
         f.write('\n'.join(lines))
 
 def iterate_through_generations(generations_num):
-    for num_of_generations in range(generations_num):
+    fun_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10]
+    fun_list = [f5, f6, f7, f8]
+    #fun_list = [f10]#, f6, f7, f8, f9, f10]
+    for n in range(len(fun_list)):
+        print(f'Function number: {n+5}')
         results = []
-        fun_list = [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10]
-        print(f"{num_of_generations+1} generation: ")
-        for n in range(len(fun_list)):
-            fun = fun_list[n]
-            domain_dim = 10
-            upp_bound =10
-            ea1 = Evolution(fun, domain_dim, upp_bound, 100, 100, False, 0.1, 0.8)
-            ea1.learn()
-            points = ea1.get_points_for_approximator(num_of_generations+1, True)
-            if n ==1:
-                print(points.size)
-            approx = Approximator(UPPER_BOUND=upp_bound, DIMENTIONALITY=domain_dim, limit_err=0.01)
-            approx.K_list.append(points)
-            a = approx.calculate_a_vector(points)
+        fun = fun_list[n]
+        domain_dim = 10
+        upp_bound =10
+        population_size = 50
+        ea1 = Evolution(goal_function=fun, function_dimension=domain_dim,upper_bound= upp_bound, 
+            population_size=population_size, max_iter=generations_num, 
+            with_crossing=False, mutation_strength=0.1, p_crossover=0.8)
+        ea1.learn()
+        points = ea1.get_points_for_approximator(generations_num, True)
+        for gen_num in range(generations_num):
+            #print((gen_num+1)*population_size)
+            pts = points[0:(gen_num+1)*population_size]  
+            #print(pts.size) 
+            approx = Approximator(UPPER_BOUND=upp_bound, DIMENTIONALITY=domain_dim, limit_err=1)
+            approx.K_list.append(pts)
+            a = approx.calculate_a_vector(pts)
             approx.a_list.append(a)
             a_list, k_list = approx.check_domain()
             results.append([approx.find_minimum(function=fun)[0], approx.find_minimum_in_init_data()[0]])
+        model_is_better = 0
         for element in results:
             print(element)
+            if element[0]<element[1]:
+                model_is_better+=1
+        print(f'Model was better in {model_is_better/len(results)*100}% attempts')
 
 def main():
-    iterate_through_generations(10)
+    iterate_through_generations(generations_num=40)
 
 if __name__ == '__main__':
     main()
