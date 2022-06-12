@@ -34,7 +34,7 @@ def make_statistics(runs_number):
                 # print(f"Mutation strength: {mutation}")
                 minimums = np.empty([runs_number])
                 for i in range(runs_number):
-                    ea = Evolution(function, 10, 100, population, 10000, False, mutation, 0.8)
+                    ea = Evolution(function, 10, 100, population, 10000 / population, False, mutation, 0.8)
                     ea.learn()
                     minimum = ea.get_optimum()[1]
                     minimums[i] = minimum
