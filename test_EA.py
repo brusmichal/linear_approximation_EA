@@ -28,7 +28,7 @@ def make_statistics(runs_number, with_print):
     if with_print:
         print(f"Populations: {populations}")
         print(f"Mutation strengths: {mutations}\n")
-    for l, function in enumerate(cec.all_functions[0:1]):
+    for l, function in enumerate(cec.all_functions):
         if with_print:
             print(f"Function {function}:\n")
         for k, population in enumerate(populations):
