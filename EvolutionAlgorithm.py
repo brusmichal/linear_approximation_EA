@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 
 class Evolution:
@@ -166,22 +165,7 @@ class Evolution:
         plt.grid(b=True)
         plt.show()
 
-    def plot_nice_3d(self):
-        fig = plt.figure(figsize=(15, 15))
-        ax = Axes3D(fig)
-        X = np.linspace(-5, 5, 50)
-        Y = np.linspace(-5, 5, 50)
-        X, Y = np.meshgrid(X, Y)
-        Z = self.goal_function([X, Y])
-        surf = ax.plot_surface(X, Y, Z, cmap='plasma')
-        # steps = np.array(self.population_history)
-        # steps = steps.reshape(-1, steps.shape[-1])
-        # ev = np.array(self.evaluation_history)
-        # ev = ev.reshape(-1, steps.shape[-1])
-        # ax.scatter(steps[:, 0], steps[:, 1], ev)
-        ax.view_init(20, 30)
-        fig.colorbar(surf, shrink=0.5, aspect=5)
-        plt.show()
+
 
     def plot_generations_means(self):
         y = np.array([evaluation.mean() for evaluation in self.evaluation_history])
