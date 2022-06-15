@@ -17,12 +17,12 @@ def f2(x):
 
 def main():
     # test_ea()
-    make_statistics(1, with_print=False)
+    make_params_statistics(25, with_print=True)
 
 
-def make_statistics(runs_number, with_print):
-    populations = np.array([20, 50, 80, 100, 120])
-    mutations = np.array([0.05, 0.1, 0.5, 1, 2])
+def make_params_statistics(runs_number, with_print):
+    populations = np.array([20, 50, 80, 100, 120, 150])
+    mutations = np.array([0.05, 0.1, 0.5, 1, 2, 5])
     means = np.empty((len(cec.all_functions), len(populations), len(mutations)))
     stds = np.empty((len(cec.all_functions), len(populations), len(mutations)))
     if with_print:
