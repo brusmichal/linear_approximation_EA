@@ -199,7 +199,9 @@ class Evolution:
             steps = np.array(self.population_history)
             steps = steps.reshape(-1, steps.shape[-1])
             plt.scatter(steps[:, 0], steps[:, 1])
-
-        plt.title(f"Minimum = {minimum[1]}")
+        if only_best_points:
+            plt.title(f"Historia najlepszych punktów. Minimum = {minimum[1]}")
+        else:
+            plt.title(f"Historia populacji. Minimum = {minimum[1]}")
         plt.plot(minimum[0][0], minimum[0][1], '*')
         plt.show()

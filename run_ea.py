@@ -5,15 +5,6 @@ from EvolutionAlgorithm import Evolution
 import cec2017.functions as cec
 
 
-def main():
-    test_example_function(f)
-    make_params_statistics(25, with_print=True)
-
-
-if __name__ == '__main__':
-    main()
-
-
 def square_function(x):
     return x[0] ** 2 + x[1] ** 2
 
@@ -35,6 +26,7 @@ def make_params_statistics(runs_number, with_print):
         if with_print:
             print(f"Function {function}:\n")
         for k, population in enumerate(populations):
+
             # print(f"Population size: {population}")
             for j, mutation in enumerate(mutations):
                 # print(f"Mutation strength: {mutation}")
@@ -62,8 +54,18 @@ def make_params_statistics(runs_number, with_print):
 
 
 def test_example_function(func):
-    ea1 = Evolution(func, 10, 100, 20, 1000, True, 0.1, 0.8)
+    ea1 = Evolution(func, 10, 100, 20, 5000, True, 0.1, 0.8)
     ea1.run()
     ea1.plot_population_move(only_best_points=False)
+    ea1.plot_population_move(only_best_points=True)
     ea1.plot_best_points_values_history()
     ea1.plot_generations_means()
+
+
+def main():
+    test_example_function(cec.f4)
+    # make_params_statistics(25, with_print=True)
+
+
+if __name__ == '__main__':
+    main()
