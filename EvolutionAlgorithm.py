@@ -86,7 +86,7 @@ class Evolution:
         return self.tournament_selection()
 
     def genetic_operations(self, reproduced):
-        children = self.uniform_crossover(reproduced)
+        children = self.arithmetic_crossover(reproduced)
         mutants = self.mutation_gaussian(children)
         return mutants
 
@@ -110,7 +110,7 @@ class Evolution:
             selected[i] = winner
         return selected
 
-    def uniform_crossover(self, reproduced):
+    def arithmetic_crossover(self, reproduced):
         children = np.empty([self.population_size, self.population_dim])
         rng = np.random.default_rng()
         for i in range(0, self.population_size - 1, 2):
