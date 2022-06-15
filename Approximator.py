@@ -1,5 +1,4 @@
 from ast import Return
-from asyncio.windows_events import NULL
 import numpy as np
 from numpy.linalg import inv
 from numpy import transpose, matmul, subtract, true_divide
@@ -114,7 +113,7 @@ class Approximator():
                 K_not_included.append(m_max)
                 print(f"Excluding {m_max} part")
                 m_max, err_max = self.check_all_parts(K_not_included)
-                if m_max == NULL:
+                if m_max == None:
                     break
                 i = 0
             else:
@@ -130,7 +129,7 @@ class Approximator():
                     split_value = self.update_K_a_b_lists(curr_K, n, m_max)
                     self.manage_bounds_set(m_max, split_value)
                     m_max, err_max = self.check_all_parts(K_not_included)
-                    if m_max ==NULL:
+                    if m_max ==None:
                         break
                 self.change_axis()
         return self.a_list, self.K_list
@@ -154,7 +153,7 @@ class Approximator():
 
     #sprawdzanie wszystkich części dziedziny w poszukiwaniu największego błędu dopasowania modelu
     def check_all_parts(self, K_not_included):
-        m_max = NULL
+        m_max = None
         err_max = 0
         #print(f"Checking everything. Not including {len(K_not_included)} parts.")
         for m in range(len(self.K_list)):
@@ -170,7 +169,7 @@ class Approximator():
     #poszukiwanie wartości minimalnej w wierzchołkach części dziedziny
     def find_minimum(self, function):
         min = 10e20
-        x_min = NULL
+        x_min = None
         for m in range(len(self.K_list)):
             low_bound = list(self.low_limits_list[m])
             upp_bound = list(self.up_limits_list[m])
@@ -210,7 +209,7 @@ class Approximator():
     #szukanie najmniejszej wartości funkcji dla dostarczonych do aproksymatora punktów
     def find_minimum_in_init_data(self):
         min = 10e20
-        x = NULL
+        x = None
         for m in range(len(self.K_list)):
             for n in range(self.K_list[m].shape[0]):
                 val = self.K_list[m][n][-1]

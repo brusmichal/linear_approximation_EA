@@ -94,10 +94,13 @@ def iterate_through_generations(generations_num, fun_list, domain_dim, upp_bound
 
 
 def make_statistics(runs_number, with_print):
-    functions_list = [cec.f1, cec.f2, cec.f3, cec.f4, cec.f5, cec.f6, cec.f7, cec.f8, cec.f9, cec.f10, cec.f11, cec.f12]
-    generations_number = np.array([100, 1000, 2000, 3000, 4000, 5000])
-    populations_for_func = np.array([20, 20, 20, 20, 150, 50, 120, 120, 20, 120, 20, 50])
-    mutations_for_func = np.array([1, 2, 2, 5, 1, 5, 2, 1, 2, 2, 5, 2])
+    functions_list = cec.all_functions[16, ]
+    generations_number = np.array([10, 25, 50, 75, 100])
+    populations_for_func = np.array(
+        [20, 20, 20, 20, 150, 50, 120, 120, 20, 120, 20, 50, 50, 20, 20, 150, 80, 120, 20, 80, 100, 20, 80, 120, 20, 50,
+         100, 20, 150, 20])
+    mutations_for_func = np.array(
+        [1, 2, 2, 5, 1, 5, 2, 1, 2, 2, 5, 2, 0.05, 5, 5, 5, 0.5, 0.5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2])
     means = np.empty([len(cec.all_functions), len(generations_number), 3])
     stds = np.empty([len(cec.all_functions), len(generations_number), 2])
     for l, function in enumerate(functions_list):
