@@ -101,7 +101,7 @@ class Approximator():
         split_value = K[n, self.axis]
         return A, B, a_A, a_B, split_value
 
-
+    #główna funkcja zarządzająca dzieleniem dziedziny na części
     def check_domain(self, K_not_included=[]):
         i = 0
         m_max, err_max = self.check_all_parts(K_not_included)
@@ -118,7 +118,8 @@ class Approximator():
                     break
                 i = 0
             else:
-                #print(f'Axis: {self.axis}')
+                #po posortowaniu wg. odpowiedniej osi, punkty sa dzielone na dwie części 
+                #w miejscu wystąpienia największego błędu dopasowania
                 curr_K = self.K_list[m_max][self.K_list[m_max][:, self.axis].argsort()]
                 n, err = self.check_domain_part(curr_K, self.a_list[m_max])
                 if n == -1:
@@ -128,13 +129,13 @@ class Approximator():
                 else:
                     split_value = self.update_K_a_b_lists(curr_K, n, m_max)
                     self.manage_bounds_set(m_max, split_value)
-                    #print("Split of domain done")
                     m_max, err_max = self.check_all_parts(K_not_included)
                     if m_max ==NULL:
                         break
                 self.change_axis()
         return self.a_list, self.K_list
 
+    #zapisywanie nowopowstałych części po podziale
     def update_K_a_b_lists(self, curr_K, n, m_max):
         A, B, a_A, a_B, split_value = self.split_domain(curr_K, n)
         self.K_list[m_max] = A
@@ -143,6 +144,7 @@ class Approximator():
         self.a_list.append(a_B)
         return split_value
 
+    #tworzenie zestawu parametrów opisująceych nową część dziedziny i ograniczanie oryginalnej części
     def manage_bounds_set(self, m_max, value):
         length = len(self.up_limits_list)
         self.up_limits_list.append(list(self.up_limits_list[m_max]))
@@ -150,6 +152,7 @@ class Approximator():
         self.low_limits_list.append(list(self.low_limits_list[m_max]))
         self.low_limits_list[len(self.up_limits_list)-1][self.axis-1] = value
 
+    #sprawdzanie wszystkich części dziedziny w poszukiwaniu największego błędu dopasowania modelu
     def check_all_parts(self, K_not_included):
         m_max = NULL
         err_max = 0
@@ -164,6 +167,7 @@ class Approximator():
             #print(f"Not excluded: {m}")
         return m_max, err_max
 
+    #poszukiwanie wartości minimalnej w wierzchołkach części dziedziny
     def find_minimum(self, function):
         min = 10e20
         x_min = NULL
@@ -193,6 +197,7 @@ class Approximator():
                     min, x_min = self.minimum_test(a, min,x_min, list(upp_bound), function)
         return min, x_min
 
+
     def minimum_test(self, a, min, x_min, x, function):
         x_norm = np.append([1], x)
         value = x_norm @ a
@@ -202,6 +207,7 @@ class Approximator():
             x_min = x
         return min, x_min
 
+    #szukanie najmniejszej wartości funkcji dla dostarczonych do aproksymatora punktów
     def find_minimum_in_init_data(self):
         min = 10e20
         x = NULL
@@ -215,6 +221,7 @@ class Approximator():
                     min = val
         return min,x
 
+    #tworzenie zbioru potęgowego wykorzystywanego do wyznaczania wierzchołków częsci dziedziny
     def create_set(self,dim):
         containing_condits = []
         a = str(0)+str(dim)+'b'
