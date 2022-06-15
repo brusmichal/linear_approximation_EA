@@ -98,7 +98,7 @@ def make_statistics(runs_number, with_print):
     means = np.empty([len(cec.all_functions), len(generations_number), 3])
     stds = np.empty([len(cec.all_functions), len(generations_number), 2])
     for l, function in enumerate(functions_list):
-        if l<6:   ### tutaj można na chama utawić ok jakiego miejsca listy funkcji ma liczyć
+        if l<-1:   ### tutaj można na chama utawić ok jakiego miejsca listy funkcji ma liczyć
             continue
         if with_print:
             print(f"Function {function}:\n")
@@ -106,7 +106,7 @@ def make_statistics(runs_number, with_print):
         mutation = mutations_for_func[l]
         minimums = np.empty([len(generations_number), 2, runs_number])
         for i in range(runs_number):
-            ea = Evolution(function, 10, 100, population, np.floor(generations_number[-1] / population), True, mutation, 0.8)
+            ea = Evolution(function, 10, 100, population, generations_number[-1], True, mutation, 0.8)
             ea.learn()
             points = ea.get_points_for_approximator(generations_number[-1], True)
             print(f' points: {len(points)}')
