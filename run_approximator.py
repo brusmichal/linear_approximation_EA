@@ -59,7 +59,7 @@ def iterate_through_generations(generations_num, fun_list, domain_dim, upp_bound
             ea1 = Evolution(goal_function=fun, function_dimension=domain_dim, upper_bound=upp_bound,
                             population_size=population_size, max_iter=generations_num,
                             with_crossing=False, mutation_strength=0.5, p_crossover=0.8)
-            ea1.learn()
+            ea1.run()
             points = ea1.get_points_for_approximator(generations_num, True)
             model_best_min = 10e20
             ae_best_min = 10e20
@@ -110,7 +110,7 @@ def make_statistics(runs_number, with_print):
         minimums = np.empty([len(generations_number), 2, runs_number])
         for i in range(runs_number):
             ea = Evolution(function, 10, 100, population, generations_number[-1], True, mutation, 0.8)
-            ea.learn()
+            ea.run()
             points = ea.get_points_for_approximator(generations_number[-1], True)
             print(f' points: {len(points)}')
             for j, gen_num in enumerate(generations_number):

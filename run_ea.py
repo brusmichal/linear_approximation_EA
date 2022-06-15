@@ -41,7 +41,7 @@ def make_params_statistics(runs_number, with_print):
                 minimums = np.empty([runs_number])
                 for i in range(runs_number):
                     ea = Evolution(function, 10, 100, population, 10000 / population, True, mutation, 0.8)
-                    ea.learn()
+                    ea.run()
                     minimum = ea.get_optimum()[1]
                     minimums[i] = minimum
                 means[l][k][j] = minimums.mean()
@@ -63,7 +63,7 @@ def make_params_statistics(runs_number, with_print):
 
 def test_example_function(func):
     ea1 = Evolution(func, 10, 100, 20, 1000, True, 0.1, 0.8)
-    ea1.learn()
+    ea1.run()
     ea1.plot_population_move(only_best_points=False)
     ea1.plot_best_points_values_history()
     ea1.plot_generations_means()

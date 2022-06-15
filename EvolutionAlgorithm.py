@@ -45,7 +45,7 @@ class Evolution:
         else:
             return points[k_th_generation*self.population_size]
 
-    def learn(self):
+    def run(self):
         self.initialize_population()
         while self.current_gen_count < self.max_gen_count:
             self.next_generation()
