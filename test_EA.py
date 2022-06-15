@@ -1,23 +1,26 @@
 import math
 import numpy as np
 import pandas as pd
-from pprint import pprint
 from EvolutionAlgorithm import Evolution
 import cec2017.functions as cec
+
+
+def main():
+    test_example_function(f)
+    make_params_statistics(25, with_print=True)
+
+
+if __name__ == '__main__':
+    main()
 
 
 def square_function(x):
     return x[0] ** 2 + x[1] ** 2
 
 
-def f2(x):
+def f(x):
     e = math.e
     return 1.5 - (e ** (-x[0] ** 2 - x[1] ** 2)) - 0.5 * (e ** (-(x[0] - 1) ** 2 - (x[1] + 2) ** 2))
-
-
-def main():
-    # test_ea()
-    make_params_statistics(25, with_print=True)
 
 
 def make_params_statistics(runs_number, with_print):
@@ -54,18 +57,13 @@ def make_params_statistics(runs_number, with_print):
                 f"Best parameters values (pop_size, mut_str): {populations[best_params[0]], mutations[best_params[1]]}")
             print(f"Mean minimum with these params: {means[l][best_params[0]][best_params[1]]}")
             print("--------------------------------------------------------------------------------------------------")
-        pd.DataFrame(means[l]).to_csv('stats/means/means' + str(l) + '.csv')
-        pd.DataFrame(stds[l]).to_csv('stats/stds/stds' + str(l) + '.csv')
+        pd.DataFrame(means[l]).to_csv('stats/ae/means/means' + str(l) + '.csv')
+        pd.DataFrame(stds[l]).to_csv('stats/ae/stds/stds' + str(l) + '.csv')
 
 
-def test_ea():
-    ea1 = Evolution(cec.f1, 10, 100, 20, 10000, True, 0.1, 0.8)
+def test_example_function(func):
+    ea1 = Evolution(func, 10, 100, 20, 1000, True, 0.1, 0.8)
     ea1.learn()
-    points = ea1.get_points_for_approximator(2, True)
     ea1.plot_population_move(only_best_points=False)
     ea1.plot_best_points_values_history()
     ea1.plot_generations_means()
-
-
-if __name__ == '__main__':
-    main()
