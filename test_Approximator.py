@@ -135,13 +135,13 @@ def make_statistics(runs_number, with_print):
             for run in range(runs_number):
                 if minimums[generation][0][run] < minimums[generation][1][run]:
                     model_was_better+=1
-            model_gen_min = minimums[generation][0][:]
-            ea_gen_min = minimums[generation][1][:]
-            means[l][generation][0] = round(model_gen_min.mean(),2)#approx
-            means[l][generation][1] = round(ea_gen_min.mean(),2) #ea
+            model_gen_mean = minimums[generation][0][:]
+            ea_gen_mean = minimums[generation][1][:]
+            means[l][generation][0] = round(model_gen_mean.mean(),2)#approx
+            means[l][generation][1] = round(ea_gen_mean.mean(),2) #ea
             means[l][generation][2] = round((model_was_better/runs_number)*100,2)#ea
-            stds[l][generation][0] = round(model_gen_min.std(),2)
-            stds[l][generation][1] = round(ea_gen_min.std(),2)
+            stds[l][generation][0] = round(model_gen_mean.std(),2)
+            stds[l][generation][1] = round(ea_gen_mean.std(),2)
             #print(minimums)
         if with_print:
             print(means)
